@@ -2,13 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "aurum-restaurant",
   "compatibility_date": "2026-05-09",
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": "."
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": ".",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aurum-restaurant",
+      "database_id": "cf75522a-2e48-4e75-ac7d-92baafa7f241"
+    }
   ]
 }
