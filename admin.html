@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM Admin</title>
+<style>
+:root{--black:#0a0a0a;--card:#141414;--border:rgba(201,168,76,0.2);--gold:#C9A84C;--gold-light:#E8C97A;--white:#F5F0E8;--dim:#a89f8c;--green:#2a9d5c;--red:#9d2a2a;}
+*{margin:0;padding:0;box-sizing:border-box;}body{background:var(--black);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at center,#1a1400 0%,#080808 70%);}
+.lb{background:var(--card);border:1px solid var(--border);padding:3rem;width:360px;text-align:center;}
+.lb h1{font-family:'Georgia',serif;font-size:2rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem;}
+.lb p{color:var(--dim);font-size:.8rem;letter-spacing:.1em;margin-bottom:2rem;}
+.lb input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--white);padding:.8rem 1rem;outline:none;font-size:.9rem;margin-bottom:1rem;transition:border-color .3s;}
+.lb input:focus{border-color:var(--gold);}
+.lb button{width:100%;background:var(--gold);color:#000;border:none;padding:.9rem;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;}
+.lb button:hover{background:var(--gold-light);}
+.lerr{color:#e55;font-size:.78rem;margin-top:.8rem;display:none;}
+#app{display:none;}
+.sb{width:220px;position:fixed;top:0;left:0;bottom:0;background:#0d0d0d;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.sbl{padding:1.5rem;border-bottom:1px solid var(--border);text-align:center;}
+.sbl span{font-family:'Georgia',serif;color:var(--gold);font-size:1.3rem;letter-spacing:.2em;}
+.sbl small{display:block;color:var(--dim);font-size:.6rem;letter-spacing:.2em;margin-top:.2rem;}
+.ni{display:flex;align-items:center;gap:.8rem;padding:.85rem 1.5rem;color:var(--dim);cursor:pointer;border-left:3px solid transparent;transition:all .2s;font-size:.82rem;}
+.ni:hover{color:var(--white);background:rgba(201,168,76,.05);}
+.ni.on{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.08);}
+.ni svg{width:16px;height:16px;fill:currentColor;flex-shrink:0;}
+.sbb{margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.lob{background:transparent;border:1px solid var(--border);color:var(--dim);padding:.6rem 1rem;cursor:pointer;width:100%;font-size:.75rem;letter-spacing:.1em;transition:all .3s;}
+.lob:hover{border-color:var(--red);color:var(--red);}
+.mn{margin-left:220px;padding:2rem;min-height:100vh;}
+.pg{display:none;}.pg.on{display:block;}
+.ph{margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.ph h2{font-family:'Georgia',serif;font-size:1.6rem;color:var(--gold);font-weight:400;}
+.ph p{color:var(--dim);font-size:.8rem;margin-top:.3rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.pc{background:var(--card);border:1px solid var(--border);padding:1.5rem;}
+.pc h3{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem;}
+.pc h3::before{content:'';width:20px;height:1px;background:var(--gold);}
+.lb2{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.4rem;margin-top:1rem;}
+.lb2:first-child{margin-top:0;}
+.inp{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--white);padding:.7rem .9rem;outline:none;font-size:.85rem;transition:border-color .3s;-webkit-appearance:none;resize:vertical;}
+.inp:focus{border-color:var(--gold);}select.inp option{background:var(--card);}
+.btn{display:inline-block;padding:.6rem 1.4rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;}
+.bg{background:var(--gold);color:#000;}.bg:hover{background:var(--gold-light);}
+.bo{background:transparent;border:1px solid var(--border);color:var(--dim);}.bo:hover{border-color:var(--gold);color:var(--gold);}
+.br2{background:transparent;border:1px solid var(--border);color:var(--dim);}.br2:hover{border-color:var(--red);color:var(--red);}
+.bsm{padding:.35rem .8rem;font-size:.64rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:#fff;padding:.8rem 1.5rem;font-size:.8rem;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:none;opacity:1;}.toast.err{background:var(--red);}
+table{width:100%;border-collapse:collapse;margin-top:1rem;}
+th{text-align:left;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);padding:.6rem .8rem;border-bottom:1px solid var(--border);}
+td{padding:.8rem;border-bottom:1px solid rgba(201,168,76,.07);vertical-align:middle;font-size:.82rem;color:var(--dim);}
+td:first-child{color:var(--white);}tr:hover td{background:rgba(201,168,76,.025);}
+td img{width:50px;height:50px;object-fit:cover;}
+.pill{display:inline-block;padding:.2rem .6rem;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);color:var(--dim);}
+.p-g{border-color:var(--green);color:var(--green);}.p-r{border-color:var(--red);color:var(--red);}.p-y{border-color:#e5a700;color:#e5a700;}
+.sc{background:var(--card);border:1px solid var(--border);padding:1.5rem;text-align:center;}
+.sc .n{font-family:'Georgia',serif;font-size:2.5rem;color:var(--gold);line-height:1;}
+.sc .l{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:.4rem;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal.open{display:flex;}
+.mbox{background:var(--card);border:1px solid var(--border);padding:2rem;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.mbox h3{font-family:'Georgia',serif;color:var(--gold);font-size:1.2rem;margin-bottom:1.5rem;}
+.mfoot{display:flex;gap:1rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);}
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.ls2{text-align:center;padding:3rem;color:var(--dim);}
+.view-site{display:inline-flex;align-items:center;gap:.5rem;color:var(--gold);text-decoration:none;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--border);padding:.5rem 1rem;transition:all .3s;margin-left:1rem;}
+.view-site:hover{background:rgba(201,168,76,.1);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lb">
+    <h1>AURUM</h1>
+    <p>Admin Panel · Secure Access</p>
+    <input type="password" id="pwd" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">Sign In</button>
+    <div class="lerr" id="lerr">Incorrect password.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sb">
+    <div class="sbl"><span>AURUM</span><small>Admin Dashboard</small></div>
+    <div class="ni on" onclick="go('dashboard',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard
+    </div>
+    <div class="ni" onclick="go('menu',this)">
+      <svg viewBox="0 0 24 24"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-8-15.03-8-15.03 0h15.03zM1.02 17h15v2H1.02v-2z"/></svg>Menu Items
+    </div>
+    <div class="ni" onclick="go('settings',this)">
+      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43.17-0.47.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02.64,0.07.94l-2.03,1.58c-0.18.14-0.23.41-0.12.61l1.92,3.32c0.12.22,0.37.29,0.59.22l2.39-.96c0.5.38,1.03.7,1.62.94l0.36,2.54c0.05.24,0.24.41,0.48.41h3.84c0.24,0,0.44-.17.47-.41l0.36-2.54c0.59-.24,1.13-.56,1.62-.94l2.39.96c0.22.08,0.47,0,0.59-.22l1.92-3.32c0.12-.22.07-.47-0.12-.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>Settings
+    </div>
+    <div class="ni" onclick="go('reservations',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>Reservations
+    </div>
+    <div class="sbb">
+      <a href="/" target="_blank" class="view-site" style="display:flex;margin-bottom:.8rem;">🌐 View Website</a>
+      <button class="lob" onclick="location.reload()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="mn">
+    <!-- DASHBOARD -->
+    <div class="pg on" id="pg-dashboard">
+      <div class="ph">
+        <h2>Dashboard</h2>
+        <p>Welcome — restaurant overview</p>
+      </div>
+      <div class="g3" style="margin-bottom:2rem;">
+        <div class="sc"><div class="n" id="sM">-</div><div class="l">Menu Items</div></div>
+        <div class="sc"><div class="n" id="sR">-</div><div class="l">Total Reservations</div></div>
+        <div class="sc"><div class="n" id="sP">-</div><div class="l">Pending</div></div>
+      </div>
+      <div class="pc"><h3>Recent Reservations</h3>
+        <table id="dT"><thead><tr><th>Name</th><th>Date</th><th>Guests</th><th>Status</th></tr></thead>
+        <tbody><tr><td colspan="4" class="ls2"><div class="spin"></div></td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="pg" id="pg-menu">
+      <div class="ph"><h2>Menu Items</h2><p>Changes go live <strong style="color:var(--gold)">instantly</strong> on your website</p></div>
+      <div style="margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+        <button class="btn bg" onclick="openAdd()">+ Add New Item</button>
+        <select class="inp" style="width:160px;display:inline-block;" onchange="filterCat(this.value)">
+          <option value="all">All Categories</option>
+          <option value="starters">Starters</option>
+          <option value="mains">Mains</option>
+          <option value="desserts">Desserts</option>
+          <option value="drinks">Drinks</option>
+        </select>
+      </div>
+      <div class="pc" style="overflow-x:auto;">
+        <table id="mT"><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody><tr><td colspan="6" class="ls2"><div class="spin"></div></td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="pg" id="pg-settings">
+      <div class="ph"><h2>Settings</h2><p>Changes go live on the website <strong style="color:var(--gold)">immediately</strong> after saving</p></div>
+      <div class="g2">
+        <div class="pc"><h3>Restaurant Info</h3>
+          <label class="lb2">Hero Pre-line</label><input class="inp" id="s-hero_tagline" placeholder="Est. 2008 · Casablanca">
+          <label class="lb2">Main Tagline</label><input class="inp" id="s-tagline">
+          <label class="lb2">Chef Name</label><input class="inp" id="s-chef_name">
+          <label class="lb2">About — Paragraph 1</label><textarea class="inp" id="s-about_text1" style="min-height:90px;"></textarea>
+          <label class="lb2">About — Paragraph 2</label><textarea class="inp" id="s-about_text2" style="min-height:90px;"></textarea>
+          <button class="btn bg" style="margin-top:1.2rem;" onclick="saveK(['hero_tagline','tagline','chef_name','about_text1','about_text2'])">💾 Save Info</button>
+        </div>
+        <div>
+          <div class="pc" style="margin-bottom:1.5rem;"><h3>Contact Info</h3>
+            <label class="lb2">Phone</label><input class="inp" id="s-phone">
+            <label class="lb2">WhatsApp (digits only)</label><input class="inp" id="s-whatsapp">
+            <label class="lb2">Email</label><input class="inp" id="s-email">
+            <label class="lb2">Address</label><textarea class="inp" id="s-address" style="min-height:70px;"></textarea>
+            <button class="btn bg" style="margin-top:1.2rem;" onclick="saveK(['phone','whatsapp','email','address'])">💾 Save Contact</button>
+          </div>
+          <div class="pc"><h3>Hours & Security</h3>
+            <label class="lb2">Weekday Hours (Mon–Fri)</label><input class="inp" id="s-hours_weekday">
+            <label class="lb2">Weekend Hours (Sat–Sun)</label><input class="inp" id="s-hours_weekend">
+            <label class="lb2" style="margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.5rem;">New Admin Password</label>
+            <input class="inp" type="password" id="s-admin_password" placeholder="Leave blank to keep current">
+            <button class="btn bg" style="margin-top:1.2rem;" onclick="saveK(['hours_weekday','hours_weekend','admin_password'])">💾 Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS -->
+    <div class="pg" id="pg-reservations">
+      <div class="ph"><h2>Reservations</h2><p>All incoming reservation requests from the website</p></div>
+      <div class="pc" style="overflow-x:auto;">
+        <table id="rT"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Date</th><th>Guests</th><th>Occasion</th><th>Notes</th><th>Status</th><th>Update</th></tr></thead>
+        <tbody><tr><td colspan="9" class="ls2"><div class="spin"></div></td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MENU MODAL -->
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h3 id="mt">Add Menu Item</h3>
+    <input type="hidden" id="mId">
+    <label class="lb2">Category</label>
+    <select class="inp" id="mC"><option value="starters">Starters</option><option value="mains">Mains</option><option value="desserts">Desserts</option><option value="drinks">Drinks</option></select>
+    <label class="lb2">Dish Name *</label><input class="inp" id="mN" placeholder="e.g. Seared Foie Gras">
+    <label class="lb2">Tag (small label)</label><input class="inp" id="mG" placeholder="e.g. Signature Starter">
+    <label class="lb2">Description</label><textarea class="inp" id="mD" placeholder="Describe the dish..." style="min-height:80px;"></textarea>
+    <label class="lb2">Price *</label><input class="inp" id="mP" placeholder="e.g. 320 MAD">
+    <label class="lb2">Badge</label><input class="inp" id="mB" placeholder="e.g. Chef's Pick">
+    <label class="lb2">Image URL</label><input class="inp" id="mI" placeholder="https://images.unsplash.com/...">
+    <label class="lb2">Visibility</label>
+    <select class="inp" id="mA"><option value="1">✅ Visible on website</option><option value="0">🔴 Hidden</option></select>
+    <div class="mfoot">
+      <button class="btn bo" onclick="closeM()">Cancel</button>
+      <button class="btn bg" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let p='', aM=[], aR=[];
+
+function login(){
+  p=document.getElementById('pwd').value;
+  if(!p)return;
+  fetchA().then(d=>{
+    if(d.error){document.getElementById('lerr').style.display='block';p='';}
+    else{document.getElementById('ls').style.display='none';document.getElementById('app').style.display='block';pop(d);}
+  }).catch(()=>{document.getElementById('lerr').style.display='block';p='';});
+}
+
+async function fetchA(){
+  const r=await fetch('/api/admin',{headers:{'X-Admin-Password':p}});
+  return r.json();
+}
+async function postA(b){
+  const r=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':p},body:JSON.stringify(b)});
+  return r.json();
+}
+
+function go(id,el){
+  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  el.classList.add('on');
+}
+
+function pop(d){
+  const{settings:s,menu:m,reservations:r}=d;
+  aM=m; aR=r;
+  for(const[k,v]of Object.entries(s)){const e=document.getElementById('s-'+k);if(e)e.value=v;}
+  document.getElementById('sM').textContent=m.length;
+  document.getElementById('sR').textContent=r.length;
+  document.getElementById('sP').textContent=r.filter(x=>x.status==='pending').length;
+  renderM(m); renderR(r);
+  const dt=document.querySelector('#dT tbody');
+  if(!r.length){dt.innerHTML='<tr><td colspan="4" class="ls2">No reservations yet.</td></tr>';return;}
+  dt.innerHTML=r.slice(0,8).map(x=>`<tr><td>${x.first_name} ${x.last_name}</td><td>${x.date}</td><td>${x.guests}</td><td><span class="pill ${x.status==='pending'?'p-y':x.status==='confirmed'?'p-g':'p-r'}">${x.status}</span></td></tr>`).join('');
+}
+
+function renderM(items){
+  const tb=document.querySelector('#mT tbody');
+  if(!items.length){tb.innerHTML='<tr><td colspan="6" class="ls2">No items. Add your first dish!</td></tr>';return;}
+  tb.innerHTML=items.map(i=>`
+    <tr>
+      <td><img src="${i.image_url||''}" onerror="this.src='https://placehold.co/50x50/141414/C9A84C?text=?'" alt=""></td>
+      <td style="color:var(--white)">${i.name}</td>
+      <td><span class="pill">${i.category}</span></td>
+      <td style="color:var(--gold)">${i.price}</td>
+      <td><span class="pill ${i.active?'p-g':'p-r'}">${i.active?'Active':'Hidden'}</span></td>
+      <td>
+        <button class="btn bo bsm" onclick="openEdit(${i.id})">Edit</button>
+        <button class="btn br2 bsm" onclick="delI(${i.id})">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterCat(c){renderM(c==='all'?aM:aM.filter(i=>i.category===c));}
+
+function renderR(items){
+  const tb=document.querySelector('#rT tbody');
+  if(!items.length){tb.innerHTML='<tr><td colspan="9" class="ls2">No reservations yet.</td></tr>';return;}
+  tb.innerHTML=items.map(r=>`
+    <tr>
+      <td>${r.first_name} ${r.last_name}</td>
+      <td>${r.email}</td><td>${r.phone}</td><td>${r.date}</td><td>${r.guests}</td>
+      <td>${r.occasion||'-'}</td>
+      <td title="${r.notes||''}">${r.notes?(r.notes.substring(0,25)+(r.notes.length>25?'...':'')):'-'}</td>
+      <td><span class="pill ${r.status==='pending'?'p-y':r.status==='confirmed'?'p-g':'p-r'}">${r.status}</span></td>
+      <td>
+        <select onchange="updR(${r.id},this.value)" style="background:var(--card);border:1px solid var(--border);color:var(--white);padding:.3rem;font-size:.7rem;">
+          <option ${r.status==='pending'?'selected':''} value="pending">Pending</option>
+          <option ${r.status==='confirmed'?'selected':''} value="confirmed">Confirm ✓</option>
+          <option ${r.status==='cancelled'?'selected':''} value="cancelled">Cancel ✗</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveK(keys){
+  let saved=0;
+  for(const k of keys){
+    const e=document.getElementById('s-'+k);
+    if(!e)continue;
+    const v=e.value.trim();
+    if(!v&&k==='admin_password')continue;
+    if(!v)continue;
+    await postA({action:'update_setting',key:k,value:v});
+    saved++;
+  }
+  toast(`✅ Saved! ${saved} setting(s) updated live on website.`);
+}
+
+function openAdd(){
+  document.getElementById('mt').textContent='Add Menu Item';
+  document.getElementById('mId').value='';
+  ['mN','mG','mD','mP','mB','mI'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mC').value='starters';
+  document.getElementById('mA').value='1';
+  document.getElementById('modal').classList.add('open');
+}
+
+function openEdit(id){
+  const i=aM.find(x=>x.id===id);if(!i)return;
+  document.getElementById('mt').textContent='Edit Menu Item';
+  document.getElementById('mId').value=id;
+  document.getElementById('mC').value=i.category;
+  document.getElementById('mN').value=i.name;
+  document.getElementById('mG').value=i.tag||'';
+  document.getElementById('mD').value=i.description||'';
+  document.getElementById('mP').value=i.price;
+  document.getElementById('mB').value=i.badge||'';
+  document.getElementById('mI').value=i.image_url||'';
+  document.getElementById('mA').value=i.active;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeM(){document.getElementById('modal').classList.remove('open');}
+
+async function saveItem(){
+  const id=document.getElementById('mId').value;
+  const body={
+    category:document.getElementById('mC').value,
+    name:document.getElementById('mN').value,
+    tag:document.getElementById('mG').value,
+    description:document.getElementById('mD').value,
+    price:document.getElementById('mP').value,
+    badge:document.getElementById('mB').value,
+    image_url:document.getElementById('mI').value,
+    active:document.getElementById('mA').value
+  };
+  if(!body.name||!body.price){toast('Name & price are required','err');return;}
+  const r=await postA({action:id?'update_menu':'add_menu',...body,...(id?{id:parseInt(id)}:{})});
+  if(r.success){
+    closeM();
+    toast('✅ '+(id?'Updated':'Added')+' — live on website now!');
+    const d=await fetchA();aM=d.menu;renderM(aM);
+    document.getElementById('sM').textContent=aM.length;
+  } else toast(r.error||'Error','err');
+}
+
+async function delI(id){
+  if(!confirm('Delete this menu item? This cannot be undone.'))return;
+  const r=await postA({action:'delete_menu',id});
+  if(r.success){
+    toast('Deleted');
+    const d=await fetchA();aM=d.menu;renderM(aM);
+  }
+}
+
+async function updR(id,status){
+  await postA({action:'update_reservation',id,status});
+  toast('✅ Reservation status updated');
+}
+
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(type?' '+type:'')+' show';
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+</script>
+</body>
+</html>
